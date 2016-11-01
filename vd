@@ -1,0 +1,212 @@
+[1mdiff --git a/.idea/misc.xml b/.idea/misc.xml[m
+[1mindex 08708a6..33de6e2 100644[m
+[1m--- a/.idea/misc.xml[m
+[1m+++ b/.idea/misc.xml[m
+[36m@@ -37,7 +37,7 @@[m
+     <ConfirmationsSetting value="0" id="Add" />[m
+     <ConfirmationsSetting value="0" id="Remove" />[m
+   </component>[m
+[31m-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" default="true" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">[m
+[32m+[m[32m  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">[m
+     <output url="file://$PROJECT_DIR$/build/classes" />[m
+   </component>[m
+   <component name="ProjectType">[m
+[1mdiff --git a/app/build.gradle b/app/build.gradle[m
+[1mindex dc19f73..70174be 100644[m
+[1m--- a/app/build.gradle[m
+[1m+++ b/app/build.gradle[m
+[36m@@ -23,4 +23,6 @@[m [mdependencies {[m
+     compile fileTree(dir: 'libs', include: ['*.jar'])[m
+     testCompile 'junit:junit:4.12'[m
+     compile 'com.android.support:appcompat-v7:24.2.1'[m
+[32m+[m[32m    compile 'io.realm:realm-android:0.87.5'[m
+[32m+[m
+ }[m
+[1mdiff --git a/app/src/main/java/com/szh/mypullrefresh/ui/view/CircleView.java b/app/src/main/java/com/szh/mypullrefresh/ui/view/CircleView.java[m
+[1mindex 3bd3fc0..e25b8a7 100644[m
+[1m--- a/app/src/main/java/com/szh/mypullrefresh/ui/view/CircleView.java[m
+[1m+++ b/app/src/main/java/com/szh/mypullrefresh/ui/view/CircleView.java[m
+[36m@@ -2,8 +2,15 @@[m [mpackage com.szh.mypullrefresh.ui.view;[m
+ [m
+ import android.content.Context;[m
+ import android.content.res.TypedArray;[m
+[32m+[m[32mimport android.graphics.Bitmap;[m
+[32m+[m[32mimport android.graphics.BitmapFactory;[m
+ import android.graphics.Canvas;[m
+[32m+[m[32mimport android.graphics.Color;[m
+[32m+[m[32mimport android.graphics.LinearGradient;[m
+ import android.graphics.Paint;[m
+[32m+[m[32mimport android.graphics.Path;[m
+[32m+[m[32mimport android.graphics.RectF;[m
+[32m+[m[32mimport android.graphics.Shader;[m
+ import android.util.AttributeSet;[m
+ import android.view.View;[m
+ [m
+[36m@@ -21,13 +28,14 @@[m [mpublic class CircleView extends View{[m
+     /** 内部圆的颜色 也就是填充色*/[m
+     private int mBorderInsideColor;[m
+     /** 默认的圆形和边框的颜色*/[m
+[31m-    private int defaultColor = 0x00d;[m
+[32m+[m[32m    private int defaultColor = 0xf0d;[m
+ [m
+     /** 默认的控件的宽度*/[m
+     private int defaultWidth=0;[m
+     private int defaultHeight=0;[m
+ [m
+[31m-[m
+[32m+[m[32m    private int x=0;[m
+[32m+[m[32m    private boolean add=true;[m
+ [m
+     public CircleView(Context context) {[m
+         super(context);[m
+[36m@@ -64,8 +72,120 @@[m [mpublic class CircleView extends View{[m
+         drawCircleBorder(canvas, radius ,[m
+                 mBorderOutsideColor,Paint.Style.STROKE);[m
+ [m
+[32m+[m[32m//        canvas.drawRect(60, 90, 160, 100, new Paint());// 长方形[m
+[32m+[m
+[32m+[m
+[32m+[m[32m        RectF rectF=new RectF(x,0,320-x,320);[m
+[32m+[m
+[32m+[m[32m        canvas.drawOval(rectF, new Paint());// 椭圆[m
+[32m+[m
+[32m+[m[32m        if(add && x<=160){[m
+[32m+[m[32m            x=x+4;[m
+[32m+[m[32m            add=true;[m
+[32m+[m[32m        }else if (x >0){[m
+[32m+[m[32m            add=false;[m
+[32m+[m[32m            x=x-4;[m
+[32m+[m[32m        }else{[m
+[32m+[m[32m            add= true;[m
+[32m+[m[32m        }[m
+[32m+[m[32m        invalidate();[m
+         super.onDraw(canvas);[m
+ [m
+[32m+[m[32m        // 创建画笔[m
+[32m+[m[32m        Paint p = new Paint();[m
+[32m+[m[32m        p.setColor(Color.RED);// 设置红色[m
+[32m+[m
+[32m+[m[32m        canvas.drawText("画圆：", 10, 20, p);// 画文本[m
+[32m+[m[32m        canvas.drawCircle(60, 20, 10, p);// 小圆[m
+[32m+[m[32m        p.setAntiAlias(true);// 设置画笔的锯齿效果。 true是去除，大家一看效果就明白了[m
+[32m+[m[32m        canvas.drawCircle(120, 20, 20, p);// 大圆[m
+[32m+[m
+[32m+[m[32m        canvas.drawText("画线及弧线：", 10, 60, p);[m
+[32m+[m[32m        p.setColor(Color.GREEN);// 设置绿色[m
+[32m+[m[32m        canvas.drawLine(60, 40, 100, 40, p);// 画线[m
+[32m+[m[32m        canvas.drawLine(110, 40, 190, 80, p);// 斜线[m
+[32m+[m[32m        //画笑脸弧线[m
+[32m+[m[32m        p.setStyle(Paint.Style.STROKE);//设置空心[m
+[32m+[m[32m        RectF oval1=new RectF(150,20,180,40);[m
+[32m+[m[32m        canvas.drawArc(oval1, 180, 180, false, p);//小弧形 第一个参数外切矩形、第二个是开始角度，顺时针方向。第三个参数弧的于圆心角。第四个是否是扇形[m
+[32m+[m[32m        oval1.set(190, 20, 220, 40);[m
+[32m+[m[32m        canvas.drawArc(oval1, 180, 180, false, p);//小弧形[m
+[32m+[m[32m        oval1.set(160, 30, 210, 60);[m
+[32m+[m[32m        canvas.drawArc(oval1, 0, 180, false, p);//小弧形[m
+[32m+[m
+[32m+[m[32m        canvas.drawText("画矩形：", 10, 80, p);[m
+[32m+[m[32m        p.setColor(Color.GRAY);// 设置灰色[m
+[32m+[m[32m        p.setStyle(Paint.Style.FILL);//设置填满[m
+[32m+[m[32m        canvas.drawRect(60, 60, 80, 80, p);// 正方形[m
+[32m+[m[32m        canvas.drawRect(60, 90, 160, 100, p);// 长方形[m
+[32m+[m
+[32m+[m[32m        canvas.drawText("画扇形和椭圆:", 10, 120, p);[m
+[32m+[m
+[32m+[m[32m        Shader mShader = new LinearGradient(0, 0, 100, 100,[m
+[32m+[m[32m                new int[] { Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW,[m
+[32m+[m[32m                        Color.LTGRAY }, null, Shader.TileMode.REPEAT); // 一个材质,打造出一个线性梯度沿著一条线。[m
+[32m+[m[32m        p.setShader(mShader);[m
+[32m+[m[32m        // p.setColor(Color.BLUE);[m
+[32m+[m[32m        RectF oval2 = new RectF(60, 100, 200, 240);// 设置个新的长方形，扫描测量[m
+[32m+[m[32m        canvas.drawArc(oval2, 200, 130, true, p);[m
+[32m+[m[32m        // 画弧，第一个参数是RectF：该类是第二个参数是角度的开始，第三个参数是多少度，第四个参数是真的时候画扇形，是假的时候画弧线[m
+[32m+[m[32m        //画椭圆，把oval改一下[m
+[32m+[m[32m        oval2.set(210,100,250,130);[m
+[32m+[m[32m        canvas.drawOval(oval2, p);[m
+[32m+[m
+[32m+[m[32m        canvas.drawText("画三角形：", 10, 200, p);[m
+[32m+[m[32m        // 绘制这个三角形,你可以绘制任意多边形[m
+[32m+[m[32m        Path path = new Path();[m
+[32m+[m[32m        path.moveTo(80, 200);// 此点为多边形的起点[m
+[32m+[m[32m        path.lineTo(120, 250);[m
+[32m+[m[32m        path.lineTo(80, 250);[m
+[32m+[m[32m        path.close(); // 使这些点构成封闭的多边形[m
+[32m+[m[32m        canvas.drawPath(path, p);[m
+[32m+[m
+[32m+[m[32m        // 你可以绘制很多任意多边形，比如下面画六连形[m
+[32m+[m[32m        p.reset();//重置[m
+[32m+[m[32m        p.setColor(Color.LTGRAY);[m
+[32m+[m[32m        p.setStyle(Paint.Style.STROKE);//设置空心[m
+[32m+[m[32m        Path path1=new Path();[m
+[32m+[m[32m        path1.moveTo(180, 200);[m
+[32m+[m[32m        path1.lineTo(200, 200);[m
+[32m+[m[32m        path1.lineTo(210, 210);[m
+[32m+[m[32m        path1.lineTo(200, 220);[m
+[32m+[m[32m        path1.lineTo(180, 220);[m
+[32m+[m[32m        path1.lineTo(170, 210);[m
+[32m+[m[32m        path1.close();//封闭[m
+[32m+[m[32m        canvas.drawPath(path1, p);[m
+[32m+[m
+[32m+[m
+[32m+[m[32m        //画圆角矩形[m
+[32m+[m[32m        p.setStyle(Paint.Style.FILL);//充满[m
+[32m+[m[32m        p.setColor(Color.LTGRAY);[m
+[32m+[m[32m        p.setAntiAlias(true);// 设置画笔的锯齿效果[m
+[32m+[m[32m        canvas.drawText("画圆角矩形:", 10, 260, p);[m
+[32m+[m[32m        RectF oval3 = new RectF(80, 260, 200, 300);// 设置个新的长方形[m
+[32m+[m[32m        canvas.drawRoundRect(oval3, 20, 15, p);//第二个参数是x半径，第三个参数是y半径[m
+[32m+[m
+[32m+[m[32m        //画贝塞尔曲线[m
+[32m+[m[32m        canvas.drawText("画贝塞尔曲线:", 10, 310, p);[m
+[32m+[m[32m        p.reset();[m
+[32m+[m[32m        p.setStyle(Paint.Style.STROKE);[m
+[32m+[m[32m        p.setColor(Color.GREEN);[m
+[32m+[m[32m        Path path2=new Path();[m
+[32m+[m[32m        path2.moveTo(100, 320);//设置Path的起点[m
+[32m+[m[32m        path2.quadTo(150, 310, 170, 400); //设置贝塞尔曲线的控制点坐标和终点坐标[m
+[32m+[m[32m        canvas.drawPath(path2, p);//画出贝塞尔曲线[m
+[32m+[m
+[32m+[m[32m        //画点[m
+[32m+[m[32m        p.setStyle(Paint.Style.FILL);[m
+[32m+[m[32m        canvas.drawText("画点：", 10, 390, p);[m
+[32m+[m[32m        canvas.drawPoint(60, 390, p);//画一个点[m
+[32m+[m[32m        canvas.drawPoints(new float[]{60,400,65,400,70,400}, p);//画多个点[m
+[32m+[m
+[32m+[m[32m        //画图片，就是贴图[m
+[32m+[m[32m        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);[m
+[32m+[m[32m        canvas.drawBitmap(bitmap, 250,360, p);[m
+[32m+[m
+[32m+[m
+     }[m
+ [m
+     private void setCustomAttributes(AttributeSet attrs,Context context) {[m
+[1mdiff --git a/app/src/main/res/layout/activity_my.xml b/app/src/main/res/layout/activity_my.xml[m
+[1mindex dafab20..17c2921 100644[m
+[1m--- a/app/src/main/res/layout/activity_my.xml[m
+[1m+++ b/app/src/main/res/layout/activity_my.xml[m
+[36m@@ -34,8 +34,8 @@[m
+         android:text="scrollview下拉刷新" />[m
+ [m
+     <com.szh.mypullrefresh.ui.view.CircleView[m
+[31m-        android:layout_width="100dp"[m
+[31m-        android:layout_height="100dp"[m
+[32m+[m[32m        android:layout_width="match_parent"[m
+[32m+[m[32m        android:layout_height="match_parent"[m
+         circleView:roundedimageview_border_inside_color="#ff0"[m
+         circleView:roundedimageview_border_outside_color="#00d"[m
+         android:layout_gravity="center_horizontal"[m
+[1mdiff --git a/build.gradle b/build.gradle[m
+[1mindex 168f129..66ca129 100644[m
+[1m--- a/build.gradle[m
+[1m+++ b/build.gradle[m
+[36m@@ -6,7 +6,7 @@[m [mbuildscript {[m
+     }[m
+     dependencies {[m
+         classpath 'com.android.tools.build:gradle:2.0.0'[m
+[31m-[m
+[32m+[m[41m     [m
+         // NOTE: Do not place your application dependencies here; they belong[m
+         // in the individual module build.gradle files[m
+     }[m
+warning: LF will be replaced by CRLF in .idea/misc.xml.
+The file will have its original line endings in your working directory.

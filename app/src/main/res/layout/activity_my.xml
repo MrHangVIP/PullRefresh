@@ -34,8 +34,8 @@
         android:text="scrollview下拉刷新" />
 
     <com.szh.mypullrefresh.ui.view.CircleView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         circleView:roundedimageview_border_inside_color="#ff0"
         circleView:roundedimageview_border_outside_color="#00d"
         android:layout_gravity="center_horizontal"
